@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
 
-import os
+import os, sys
+from pathlib import Path
 from PIL import Image
 
-# assign directory of images
-directory = '/Users/joshuapetry/images/'
-export_path = '/Users/joshuapetry/images_new/'
+# take input dir and output dir as sys arguments
 
-# iterate over files in
-# that directory
-for file in os.listdir(directory):
-    with Image.open(directory + file) as im:
-        filename = file + ".jpg"
-        im_rotated = im.rotate(-90)
-        im_resized = im_rotated.resize((128, 128))
-        im_rgb = im_resized.convert('RGB')
-        im_rgb.save((export_path) + filename)
+indir = Path(sys.argv[1])
+outdir = Path(sys.argv[2])
+
+glob_path = indir.glob('*')
+for infile in glob_path:
+    try:
+        with Image.open(infile) as im:
+            outfile = str(infile).replace('images/', '') + '.jpeg'
+            im_rotated = im.rotate(-90)
+            im_resized = im_rotated.resize((128, 128))
+            im_rgb = im_resized.convert('RGB')
+            im_rgb.save(str(outdir) + '/' + outfile)
+    except IOError:
+        print(str(infile) + " is not an image file.")
